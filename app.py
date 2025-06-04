@@ -62,7 +62,7 @@ bist100_list = [
 
 
 end_date = datetime.today().strftime('%Y-%m-%d')
-start_date = (datetime.today() - timedelta(days=730)).strftime('%Y-%m-%d')
+start_date = (datetime.today() - timedelta(days=180)).strftime('%Y-%m-%d')
 
 
 ticker_to_company = {
@@ -144,7 +144,7 @@ ticker_to_preference = {
 
 
 cache = TTLCache(maxsize=100, ttl=3600)
-prediction_cache = TTLCache(maxsize=100, ttl=86400)
+prediction_cache = TTLCache(maxsize=50, ttl=3600)
 
 
 
@@ -655,7 +655,7 @@ def analyze_reasons(data, sentiment_score, today_price, future_prices):
 
 
 
-def create_dataset(dataset, time_step=60):
+def create_dataset(dataset, time_step=30):
     X, y = [], []
     for i in range(len(dataset) - time_step):
         X.append(dataset[i:i + time_step])
@@ -690,12 +690,12 @@ def predict_future(model, n_days, last_sequence, time_step, input_dim):
 # Model eğitme fonksiyonu (Güncellendi)
 def train_model(X_train, y_train, X_test, y_test, input_shape):
     model = Sequential()
-    model.add(LSTM(64, return_sequences=True, input_shape=input_shape))
-    model.add(LSTM(64))
-    model.add(Dense(32))
+    model.add(LSTM(32, return_sequences=True, input_shape=input_shape))
+    model.add(LSTM(32))
+    model.add(Dense(16))
     model.add(Dense(1))
     model.compile(optimizer=Adam(), loss='mean_squared_error')
-    model.fit(X_train, y_train, epochs=10, batch_size=32, verbose=0)
+    model.fit(X_train, y_train, epochs=5, batch_size=32, verbose=0)
 
     # Test seti üzerinde performansı değerlendir
     if X_test.size > 0 and y_test.size > 0:
