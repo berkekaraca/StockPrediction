@@ -1,0 +1,37 @@
+--- Performans Metrikleri (Detaylý) ---
+
+1 Day:
+MAE: 8.33 TL
+RMSE: 9.17 TL
+MAPE: 2.98%
+Accuracy: 0.50
+F1: 0.57
+Precision: 0.40
+Recall: 1.00
+
+5 Days:
+MAE: 6.86 TL
+RMSE: 8.48 TL
+MAPE: 3.29%
+Accuracy: 0.73
+F1: 0.59
+Precision: 0.48
+Recall: 0.79
+
+1 Month:
+MAE: Veri yetersiz
+RMSE: Veri yetersiz
+MAPE: Veri yetersiz
+Accuracy: Veri yetersiz
+F1: Veri yetersiz
+Precision: Veri yetersiz
+Recall: Veri yetersiz
+
+--- Genel Ortalama Metrikler ---
+MAE: 7.60 TL
+RMSE: 8.82 TL
+MAPE: 3.13%
+Accuracy: 0.61
+F1: 0.58
+Precision: 0.44
+Recall: 0.89

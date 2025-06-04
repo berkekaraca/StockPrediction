@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geçmiş Tahminler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+        <h1>Hisse Tahmin Platformu</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Ana Sayfa</a>
+            <a href="{{ url_for('portfolio') }}">Portföy</a>
+            <a href="{{ url_for('profile') }}">Profil</a>
+            <a href="{{ url_for('info') }}">Bilgi Sayfası</a>
+            <a href="{{ url_for('logout') }}">Çıkış</a>
+        </nav>
+    </header>
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="{{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h2>Geçmiş Tahminler</h2>
+        {% if predictions %}
+            <ul>
+                {% for pred in predictions %}
+                    <li>
+                        {{ pred[0] }} - {{ pred[1] }}:
+                        1 Gün: {{ pred[2] | round(2) }} TRY,
+                        5 Gün: {{ pred[3] | round(2) }} TRY,
+                        1 Ay: {{ pred[4] | round(2) }} TRY
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="text-align: center;">Henüz tahmin yapılmamış.</p>
+        {% endif %}
+    </main>
+    <div class="disclaimer">
+        Bu sitedeki hiçbir tahmin kesinlik taşımamaktadır ve yatırım tavsiyesi değildir. İşlemleriniz kendi sorumluluğunuzdadır.
+    </div>
+</body>
+</html>

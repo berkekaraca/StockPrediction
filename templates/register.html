@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/scripts.js" defer></script>
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen">
+    <div class="bg-blue-600 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div class="flex justify-center mb-6">
+            <img src="/static/logo.png" alt="Logo" class="h-12">
+        </div>
+        <h2 class="text-2xl font-semibold text-yellow-400 mb-6 text-center">Kayıt Ol</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ 'bg-red-600' if category == 'error' else 'bg-green-600' }} text-white p-4 rounded-lg mb-6 shadow-md">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form id="register-form" method="POST" class="space-y-4">
+            <div class="flex items-center space-x-4">
+                <label for="username" class="w-24 text-yellow-400 text-sm">Kullanıcı Adı</label>
+                <input type="text" name="username" id="username" class="flex-1 p-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-yellow-400" required>
+            </div>
+            <div class="flex items-center space-x-4">
+                <label for="email" class="w-24 text-yellow-400 text-sm">E-posta</label>
+                <input type="email" name="email" id="email" class="flex-1 p-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-yellow-400" required>
+            </div>
+            <div class="flex items-center space-x-4">
+                <label for="password" class="w-24 text-yellow-400 text-sm">Şifre</label>
+                <input type="password" name="password" id="password" class="flex-1 p-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-yellow-400" required>
+            </div>
+            <button type="submit" class="w-full bg-yellow-400 text-black py-3 rounded-lg hover:bg-yellow-300 transition font-semibold text-lg">Kayıt Ol</button>
+        </form>
+        <p class="text-gray-400 mt-6 text-center text-sm">Zaten hesabınız var mı? <a href="{{ url_for('login') }}" class="text-yellow-400 hover:underline">Giriş Yap</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hisse Tahmin Platformu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+        <h1>Hisse Tahmin Platformu</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Ana Sayfa</a>
+            <a href="{{ url_for('portfolio') }}">Portföy</a>
+            <a href="{{ url_for('history') }}">Geçmiş</a>
+            <a href="{{ url_for('profile') }}">Profil</a>
+            <a href="{{ url_for('info') }}">Bilgi Sayfası</a>
+            <a href="{{ url_for('logout') }}">Çıkış</a>
+        </nav>
+    </header>
+    <main>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        {% if session['username'] %}
+            <p style="text-align: center;">Hoş geldiniz, {{ session['username'] }}!</p>
+        {% endif %}
+        <section>
+            <h2>Hisse Fiyat Grafiği</h2>
+            <form method="POST" id="stock-form">
+                <label for="ticker">Hisse Kodu:</label>
+                <input type="text" id="ticker" name="ticker" placeholder="Örn: THYAO.IS" value="{{ selected_ticker }}">
+                <label for="selected_stock">Hisse Seçin:</label>
+                <select name="selected_stock" id="selected_stock" onchange="this.form.submit()">
+                    <option value="">Hisse Seçin</option>
+                    {% for stock in bist100_list %}
+                        <option value="{{ stock }}" {% if stock == selected_ticker %}selected{% endif %}>{{ stock }}</option>
+                    {% endfor %}
+                </select>
+                <div class="button-group">
+                    <button type="submit" name="action" value="display">Grafiği Göster</button>
+                    <button type="submit" name="action" value="predict">Tahmin Et</button>
+                </div>
+            </form>
+            <div id="loading" class="hidden">Yükleniyor...</div>
+            {% if history_chart_data %}
+                <p style="text-align: center;">Son Kapanış Fiyatı: {{ today_price | round(2) }} TRY</p>
+                <canvas id="historyChart"></canvas>
+            {% endif %}
+        </section>
+        {% if predictions %}
+            <section>
+                <h3>{{ ticker or selected_ticker }} için Tahminler</h3>
+                <p style="text-align: center;">Bugünkü Fiyat: {{ today_price | round(2) }} TRY</p>
+                <p style="text-align: center;">Ortalama Duygu Skoru:
+                    {% if predictions.sentiment_score > 0 %}
+                        Olumlu haberler
+                    {% elif predictions.sentiment_score < 0 %}
+                        Olumsuz haberler
+                    {% else %}
+                        Nötr veya veri yok
+                    {% endif %}
+                </p>
+                <h4>Tahminler:</h4>
+                <ul>
+                    <li>1 Gün: {{ predictions['1_day'] | round(2) }} TL ({{ reasons['1_day'] }})</li>
+                    <li>5 Gün: {{ predictions['5_days'] | round(2) }} TL ({{ reasons['5_days'] }})</li>
+                    <li>1 Ay: {{ predictions['1_month'] | round(2) }} TL ({{ reasons['1_month'] }})</li>
+                </ul>
+                {% if preference_details %}
+                    <h4>Tercih Edilebilirlik:</h4>
+                    <ul>
+                        <li>Uzun Vadeli: {{ preference_details['uzun_vadeli'] }}</li>
+                        <li>Kısa Vadeli: {{ preference_details['kisa_vadeli'] }}</li>
+                    </ul>
+                {% endif %}
+                <h3>Son 10 Haber Başlığı</h3>
+                {% if news_message %}
+                    <p class="text-gray-400 text-sm">{{ news_message }} Alternatif olarak, daha fazla haber için lütfen başka bir hisse seçmeyi deneyin.</p>
+                {% elif headlines %}
+                    <ul class="space-y-2">
+                        {% for headline, score, link, sentiment, reason in headlines %}
+                            <li class="flex items-center space-x-2">
+                                <span class="sentiment-emoji text-lg">
+                                    {% if score > 0.3 %}🟢
+                                    {% elif score < -0.3 %}🔴
+                                    {% else %}⚪
+                                    {% endif %}
+                                </span>
+                                <a href="{{ link }}" target="_blank" class="text-yellow-400 hover:underline">{{ headline }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-gray-400 text-sm">Haber verisi bulunamadı.</p>
+                {% endif %}
+                <canvas id="predictionChart"></canvas>
+            </section>
+        {% endif %}
+    </main>
+    <div class="disclaimer">
+        Bu sitedeki hiçbir tahmin kesinlik taşımamaktadır ve yatırım tavsiyesi değildir. İşlemleriniz kendi sorumluluğunuzdadır.
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    {% if history_chart_data %}
+        <script>
+            const historyCtx = document.getElementById('historyChart').getContext('2d');
+            new Chart(historyCtx, {
+                type: 'line',
+                data: {
+                    labels: {{ history_chart_data.dates | tojson }},
+                    datasets: [{
+                        label: '{{ selected_ticker }} Geçmiş Fiyatlar',
+                        data: {{ history_chart_data.prices | tojson }},
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Tarih' } },
+                        y: { title: { display: true, text: 'Fiyat (TRY)' } }
+                    },
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Fiyat: ${context.parsed.y.toFixed(2)} TRY`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    {% endif %}
+    {% if prediction_chart_data %}
+        <script>
+            const predictionCtx = document.getElementById('predictionChart').getContext('2d');
+            new Chart(predictionCtx, {
+                type: 'line',
+                data: {
+                    labels: [...{{ prediction_chart_data.past.dates | tojson }}, ...{{ prediction_chart_data.future.dates | tojson }}],
+                    datasets: [
+                        {
+                            label: '{{ ticker or selected_ticker }} Geçmiş Fiyatlar',
+                            data: [...{{ prediction_chart_data.past.prices | tojson }}, ...Array({{ prediction_chart_data.future.prices | length }}).fill(null)],
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '{{ ticker or selected_ticker }} Tahmin Edilen Fiyatlar',
+                            data: [null, ...Array({{ prediction_chart_data.past.prices | length - 1 }}).fill(null), ...{{ prediction_chart_data.future.prices | tojson }}],
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            fill: false,
+                            pointRadius: 0,
+                            borderDash: [5, 5]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Tarih' } },
+                        y: { title: { display: true, text: 'Fiyat (TRY)' } }
+                    },
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Fiyat: ${context.parsed.y.toFixed(2)} TRY`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ stock.ticker }} - Hisse Detayları</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/scripts.js" defer></script>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4 shadow-lg fixed w-full z-10">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="/static/logo.png" alt="Logo" class="h-8 mr-3">
+                <h1 class="text-xl font-bold text-yellow-400">Borsa Tahmin Platformu</h1>
+            </div>
+            <div class="flex items-center space-x-6">
+                <span class="text-gray-300 text-sm">Hoş geldin, {{ session.username }}</span>
+                <a href="{{ url_for('index') }}" class="text-yellow-400 hover:text-yellow-300 text-sm">Ana Sayfa</a>
+                <a href="{{ url_for('portfolio') }}" class="text-yellow-400 hover:text-yellow-300 text-sm">Portföyüm</a>
+                <a href="{{ url_for('history') }}" class="text-yellow-400 hover:text-yellow-300 text-sm">Tahmin Geçmişi</a>
+                <a href="{{ url_for('profile') }}" class="text-yellow-400 hover:text-yellow-300 text-sm">Profil</a>
+                <a href="{{ url_for('logout') }}" class="text-yellow-400 hover:text-yellow-300 text-sm">Çıkış Yap</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto pt-20 pb-10 px-4">
+        <h2 class="text-3xl font-semibold text-yellow-400 mb-8">{{ stock.ticker }} - Hisse Detayları</h2>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ 'bg-red-600' if category == 'error' else 'bg-green-600' }} text-white p-4 rounded-lg mb-6 shadow-md">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Stock Overview -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+            <h3 class="text-lg font-semibold text-yellow-400 mb-4">Genel Bakış</h3>
+            <p class="text-2xl text-white mb-4">Güncel Fiyat: {{ stock.current_price }} TL</p>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {% if stock.changes['1_day'] is not none %}
+                    <div>
+                        <span class="text-gray-300 text-sm">1 Günlük Değişim:</span>
+                        <p class="text-sm {{ 'text-green-400' if stock.changes['1_day'] >= 0 else 'text-red-400' }}">{{ stock.changes['1_day'] }}%</p>
+                    </div>
+                {% endif %}
+                {% if stock.changes['5_days'] is not none %}
+                    <div>
+                        <span class="text-gray-300 text-sm">5 Günlük Değişim:</span>
+                        <p class="text-sm {{ 'text-green-400' if stock.changes['5_days'] >= 0 else 'text-red-400' }}">{{ stock.changes['5_days'] }}%</p>
+                    </div>
+                {% endif %}
+                {% if stock.changes['1_month'] is not none %}
+                    <div>
+                        <span class="text-gray-300 text-sm">1 Aylık Değişim:</span>
+                        <p class="text-sm {{ 'text-green-400' if stock.changes['1_month'] >= 0 else 'text-red-400' }}">{{ stock.changes['1_month'] }}%</p>
+                    </div>
+                {% endif %}
+                {% if stock.changes['3_months'] is not none %}
+                    <div>
+                        <span class="text-gray-300 text-sm">3 Aylık Değişim:</span>
+                        <p class="text-sm {{ 'text-green-400' if stock.changes['3_months'] >= 0 else 'text-red-400' }}">{{ stock.changes['3_months'] }}%</p>
+                    </div>
+                {% endif %}
+                {% if stock.changes['1_year'] is not none %}
+                    <div>
+                        <span class="text-gray-300 text-sm">1 Yıllık Değişim:</span>
+                        <p class="text-sm {{ 'text-green-400' if stock.changes['1_year'] >= 0 else 'text-red-400' }}">{{ stock.changes['1_year'] }}%</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Stock Chart -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+            <h3 class="text-lg font-semibold text-yellow-400 mb-4">Fiyat Grafiği</h3>
+            <div class="flex space-x-4 mb-4">
+                <button class="timeframe-btn bg-gray-700 text-yellow-400 px-4 py-2 rounded-lg hover:bg-gray-600" data-timeframe="1d">1 Gün</button>
+                <button class="timeframe-btn bg-gray-700 text-yellow-400 px-4 py-2 rounded-lg hover:bg-gray-600" data-timeframe="5d">5 Gün</button>
+                <button class="timeframe-btn bg-gray-700 text-yellow-400 px-4 py-2 rounded-lg hover:bg-gray-600" data-timeframe="1mo">1 Ay</button>
+                <button class="timeframe-btn bg-gray-700 text-yellow-400 px-4 py-2 rounded-lg hover:bg-gray-600" data-timeframe="3mo">3 Ay</button>
+                <button class="timeframe-btn bg-gray-700 text-yellow-400 px-4 py-2 rounded-lg hover:bg-gray-600" data-timeframe="1y">1 Yıl</button>
+            </div>
+            <canvas id="stockChart"></canvas>
+            <script>
+                const chartData = {{ stock.chart_data | tojson }};
+                const ctx = document.getElementById('stockChart').getContext('2d');
+                let chart;
+
+                function updateChart(timeframe) {
+                    if (chart) chart.destroy();
+                    chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: chartData[timeframe].dates,
+                            datasets: [{
+                                label: 'Fiyat (TL)',
+                                data: chartData[timeframe].prices,
+                                borderColor: '#FFD700',
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: { display: true, title: { display: true, text: 'Tarih', color: '#fff' }, ticks: { color: '#fff' } },
+                                y: { display: true, title: { display: true, text: 'Fiyat (TL)', color: '#fff' }, ticks: { color: '#fff' } }
+                            },
+                            plugins: {
+                                legend: { labels: { color: '#fff' } }
+                            }
+                        }
+                    });
+                }
+
+                document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('bg-yellow-400', 'text-black'));
+                        btn.classList.add('bg-yellow-400', 'text-black');
+                        updateChart(btn.dataset.timeframe);
+                    });
+                });
+
+                // Varsayılan olarak 1 günlük grafik
+                updateChart('1d');
+                document.querySelector('.timeframe-btn[data-timeframe="1d"]').classList.add('bg-yellow-400', 'text-black');
+            </script>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 p-6 text-center text-gray-400">
+        <p>© 2025 Borsa Tahmin Platformu. Tüm hakları saklıdır.</p>
+    </footer>
+</body>
+</html>

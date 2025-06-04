@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-posta Doğrulama</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div class="flex justify-center mb-6">
+            <img src="/static/logo.png" alt="Logo" class="h-12">
+        </div>
+        <h2 class="text-2xl font-semibold text-yellow-400 mb-6 text-center">E-posta Doğrulama</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ 'bg-red-600' if category == 'error' else 'bg-green-600' }} text-white p-4 rounded-lg mb-6 shadow-md">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <p class="text-gray-400 text-center text-sm">Doğrulama bağlantısı e-posta adresinize gönderildi. Lütfen e-postanızı kontrol edin.</p>
+        <p class="text-gray-400 mt-4 text-center text-sm"><a href="{{ url_for('login') }}" class="text-yellow-400 hover:underline">Giriş sayfasına dön</a></p>
+    </div>
+</body>
+</html>

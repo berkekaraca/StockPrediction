@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+        <h1>Hisse Tahmin Platformu</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Ana Sayfa</a>
+            <a href="{{ url_for('portfolio') }}">Portföy</a>
+            <a href="{{ url_for('history') }}">Geçmiş</a>
+            <a href="{{ url_for('profile') }}">Profil</a>
+            <a href="{{ url_for('info') }}">Bilgi Sayfası</a>
+            <a href="{{ url_for('logout') }}">Çıkış</a>
+        </nav>
+    </header>
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="{{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h2>Profil</h2>
+        <form method="POST">
+            <label for="username">Kullanıcı Adı:</label>
+            <input type="text" name="username" id="username" value="{{ user[0] }}" required>
+            <label for="email">E-posta:</label>
+            <input type="email" name="email" id="email" value="{{ user[1] }}" required>
+            <label for="password">Yeni Şifre (isteğe bağlı):</label>
+            <input type="password" name="password" id="password" placeholder="Yeni şifre girin">
+            <button type="submit">Güncelle</button>
+        </form>
+    </main>
+</body>
+</html>

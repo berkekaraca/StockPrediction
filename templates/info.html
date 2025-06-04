@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borsa Bilgi Sayfası</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                item.querySelector('.faq-question').addEventListener('click', function () {
+                    const answer = this.nextElementSibling;
+                    const isOpen = answer.style.display === 'block';
+                    answer.style.display = isOpen ? 'none' : 'block';
+                    this.classList.toggle('active', !isOpen);
+                });
+            });
+        });
+    </script>
+    <style>
+        .faq-item {
+            margin-bottom: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .faq-question {
+            cursor: pointer;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .faq-question.active {
+            background-color: #e0e0e0;
+        }
+        .faq-answer {
+            display: none;
+            padding: 10px;
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+        <h1>Hisse Tahmin Platformu</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Ana Sayfa</a>
+            <a href="{{ url_for('portfolio') }}">Portföy</a>
+            <a href="{{ url_for('history') }}">Geçmiş</a>
+            <a href="{{ url_for('profile') }}">Profil</a>
+            <a href="{{ url_for('info') }}">Bilgi Sayfası</a>
+            <a href="{{ url_for('logout') }}">Çıkış</a>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2 style="text-align: center;">Sıkça Sorulan Sorular</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">Borsa nedir ve nasıl çalışır?</div>
+                    <div class="faq-answer">
+                        Borsa, şirket hisselerinin, tahvillerin ve diğer finansal araçların alınıp satıldığı bir piyasadır. Şirketler, sermaye toplamak için hisse senetlerini halka arz eder ve yatırımcılar bu hisseleri alarak şirketlere ortak olur. Borsa İstanbul (BIST), Türkiye’de hisse senetlerinin işlem gördüğü ana borsadır. Hisse fiyatları arz-talep dengesine göre değişir.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Hisse senedi nasıl alınır?</div>
+                    <div class="faq-answer">
+                        Hisse senedi almak için öncelikle bir aracı kurumda (banka veya aracı kurum) yatırım hesabı açmanız gerekir. Hesabınızı açtıktan sonra BIST’te işlem gören hisseleri seçip alım emri verebilirsiniz. Örneğin, THYAO.IS (Türk Hava Yolları) hissesini almak için aracı kurumunuzun platformunda bu kodu aratıp istediğiniz miktarda alım yapabilirsiniz.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Borsada işlem saatleri nedir?</div>
+                    <div class="faq-answer">
+                        Borsa İstanbul, haftanın 5 günü (Pazartesi-Cuma) işlem görür. İşlem saatleri genellikle sabah 10:00’da başlar ve akşam 18:00’de sona erer. Hafta sonları (Cumartesi ve Pazar) ve resmi tatillerde borsa kapalıdır.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Borsada riskler nelerdir?</div>
+                    <div class="faq-answer">
+                        Borsada yatırım yapmak risklidir çünkü hisse fiyatları ekonomik, politik ve şirketle ilgili gelişmelere bağlı olarak dalgalanabilir. Fiyatlar düşerse zarar edebilirsiniz. Bu yüzden yatırım yapmadan önce araştırma yapmalı ve risk toleransınızı değerlendirmelisiniz.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Uzun vadeli ve kısa vadeli yatırım arasındaki fark nedir?</div>
+                    <div class="faq-answer">
+                        Uzun vadeli yatırım, hisseleri yıllarca tutmayı hedefler ve genellikle daha az risklidir çünkü kısa vadeli dalgalanmalardan etkilenmezsiniz. Kısa vadeli yatırım ise genellikle birkaç gün veya hafta içinde alım-satım yapmayı içerir ve daha fazla risk taşır ama hızlı kazanç sağlayabilir.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Borsa yatırımı için nelere dikkat etmeliyim?</div>
+                    <div class="faq-answer">
+                        Şirketin finansal durumunu, sektör trendlerini ve genel ekonomik durumu araştırın. Ayrıca, tüm paranızı tek bir hisseye yatırmaktan kaçının (portföy çeşitlendirmesi yapın). Duygusal kararlar vermek yerine planlı ve disiplinli olun.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portföyüm</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+        <h1>Hisse Tahmin Platformu</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Ana Sayfa</a>
+            <a href="{{ url_for('portfolio') }}">Portföy</a>
+            <a href="{{ url_for('history') }}">Geçmiş</a>
+            <a href="{{ url_for('profile') }}">Profil</a>
+            <a href="{{ url_for('info') }}">Bilgi Sayfası</a>
+            <a href="{{ url_for('logout') }}">Çıkış</a>
+        </nav>
+    </header>
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="{{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h2>Portföyüm</h2>
+        <form method="POST">
+            <label for="ticker">Hisse Ekle:</label>
+            <select name="ticker" id="ticker">
+                <option value="">Hisse Seçin</option>
+                {% for stock in bist100_list %}
+                    <option value="{{ stock }}">{{ stock }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" name="action" value="add">Ekle</button>
+        </form>
+        {% if portfolio %}
+            <h3>Portföydeki Hisseler</h3>
+            <ul>
+                {% for item in portfolio %}
+                    <li>
+                        {{ item.ticker }} - Güncel Fiyat: {{ item.current_price }} TRY
+                        <form method="POST" style="display: inline;">
+                            <input type="hidden" name="ticker" value="{{ item.ticker }}">
+                            <button type="submit" name="action" value="remove">Kaldır</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="text-align: center;">Portföyünüzde henüz hisse bulunmuyor.</p>
+        {% endif %}
+    </main>
+    <div class="disclaimer">
+        Bu sitedeki hiçbir tahmin kesinlik taşımamaktadır ve yatırım tavsiyesi değildir. İşlemleriniz kendi sorumluluğunuzdadır.
+    </div>
+</body>
+</html>

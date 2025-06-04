@@ -1,0 +1,188 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Eski aydınlık arka plan */
+    color: #333;
+}
+
+header {
+    background-color: #007bff; /* Eski mavi ton */
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+header .logo {
+    height: 50px;
+    vertical-align: middle;
+}
+
+nav a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: #ddd;
+}
+
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+section {
+    margin-bottom: 30px;
+}
+
+h2, h3 {
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column; /* Alt alta düzen */
+    gap: 10px;
+    margin-bottom: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+label {
+    display: block;
+    width: 100px; /* Sabit genişlik */
+    text-align: right;
+    padding-right: 10px;
+    color: #333; /* Varsayılan metin rengi */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white; /* Aydınlık arka plan */
+    color: #333;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #007bff; /* Eski mavi buton */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #0056b3; /* Eski hover rengi */
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.error {
+    color: red;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.success {
+    color: green;
+    text-align: center;
+}
+
+canvas {
+    max-width: 100%;
+    margin: 20px 0;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+ul li a {
+    color: #1e90ff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+ul li a:hover {
+    text-decoration: underline;
+    color: #4169e1;
+}
+
+.hidden {
+    display: none;
+}
+
+.sentiment-emoji {
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+
+.text-gray-400 {
+    color: #9ca3af;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.faq-item {
+    margin-bottom: 10px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.faq-question {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.faq-question.active {
+    background-color: #e0e0e0;
+}
+
+.faq-answer {
+    display: none;
+    padding: 10px;
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.disclaimer {
+    text-align: center;
+    padding: 10px;
+    background-color: #f8d7da;
+    color: #721c24;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
