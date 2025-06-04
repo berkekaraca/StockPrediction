@@ -62,7 +62,7 @@ bist100_list = [
 
 
 end_date = datetime.today().strftime('%Y-%m-%d')
-start_date = (datetime.today() - timedelta(days=180)).strftime('%Y-%m-%d')
+start_date = (datetime.today() - timedelta(days=90)).strftime('%Y-%m-%d')
 
 
 ticker_to_company = {
@@ -144,7 +144,7 @@ ticker_to_preference = {
 
 
 cache = TTLCache(maxsize=100, ttl=3600)
-prediction_cache = TTLCache(maxsize=50, ttl=3600)
+prediction_cache = TTLCache(maxsize=20, ttl=1800)
 
 
 
@@ -655,7 +655,7 @@ def analyze_reasons(data, sentiment_score, today_price, future_prices):
 
 
 
-def create_dataset(dataset, time_step=30):
+def create_dataset(dataset, time_step=20):
     X, y = [], []
     for i in range(len(dataset) - time_step):
         X.append(dataset[i:i + time_step])
@@ -1283,5 +1283,5 @@ def info():
 
 
 if __name__ == '__main__':
-    calculate_metrics()
-    app.run(host='localhost', port=5000, debug=False)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
