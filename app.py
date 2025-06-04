@@ -24,28 +24,31 @@ import nltk
 from nltk.corpus import stopwords
 from TurkishStemmer import TurkishStemmer
 import feedparser
-from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, f1_score, precision_score, \
-    recall_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, f1_score, precision_score, recall_score
+from dotenv import load_dotenv  # .env dosyasını okumak için
 
+# .env dosyasını yükle
+load_dotenv()
 
 nltk.download('stopwords')
 turkish_stopwords = set(stopwords.words('turkish'))
 stemmer = TurkishStemmer()
 
-
 app = Flask(__name__)
 CORS(app)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key_here')
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'your_email@gmail.com')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'your_app_password')
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 Session(app)
 bcrypt = Bcrypt(app)
 mail = Mail(app)
+
 
 
 classifier = pipeline('sentiment-analysis', model='savasy/bert-base-turkish-sentiment-cased')
@@ -428,7 +431,11 @@ def get_sentiment_score(ticker):
         print(f"{ticker}: Önbellekten alındı, Önbellek içeriği: {cache[ticker]}")
         return cache[ticker]
 
-    NEWS_API_KEY = "04d199c983f24c638ca3ae17a0dec337"
+    NEWS_API_KEY = os.getenv('NEWS_API_KEY')
+    if not NEWS_API_KEY:
+        print(f"{ticker}: NEWS_API_KEY eksik, haber çekimi yapılamadı.")
+        return None, [], "API anahtarı eksik, haber çekimi yapılamadı."
+
     company_name = ticker_to_company.get(ticker, ticker.split('.')[0])
     ticker_short = ticker.split('.')[0]
     sectors = ticker_to_sectors.get(ticker, [])
