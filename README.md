@@ -30,3 +30,5 @@ StockPredictionApp is a web-based application that predicts stock prices for BIS
    ```bash
    git clone https://github.com/berke/StockPredictionApp.git
    cd StockPredictionApp
+## RUN
+python app.py
