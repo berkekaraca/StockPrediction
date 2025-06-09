@@ -5,3 +5,23 @@ __pycache__/
 database.db
 database_backup.db
 .env
+
+
+# Ignore Flask session files
+flask_session/
+flask_session/*
+
+# Ignore log files
+*.log
+
+# Ignore report and temporary files
+metrics_report.txt
+prev_price
+today_price
+
+# Ignore temporary scripts
+generate_key.py
+test.py
+
+
+
